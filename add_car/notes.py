@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from my_models import Base, Notes
 import os
+from datetime import datetime
 
 
 if os.environ.get('DATABASE_URL') is None:
@@ -56,6 +57,8 @@ class CreateEditDeleteNotes(Resource):
         args = get_arguments_post()
         car = args.get('car')
         date = args.get('date')
+        dt = datetime.strptime(date, "%d/%m/%Y")
+        date = dt
         km = args.get('km')
         works = args.get('works')
         pays = args.get('pays')
