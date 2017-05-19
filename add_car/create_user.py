@@ -44,6 +44,7 @@ class CreateUser(Resource):
     def get(self):
         query = session_git.query(Users)
         users_list = [{'user_name': user.user_name, 'password': user.user_password, 'id': user.id} for user in query]
+        session_git.close()
         return jsonify(users_list)
 
     def post(self):

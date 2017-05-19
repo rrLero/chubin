@@ -48,6 +48,7 @@ class GetAddEditCars(Resource):
         query = session_git.query(Cars)
         car_list = [{'gov_number': car.gov_number, 'car_type': car.car_type,
                      'gov_number_trailer': car.gov_number_trailer, 'id': car.id, 'user_id': car.user} for car in query]
+        session_git.close()
         return jsonify(car_list)
 
     def post(self):
