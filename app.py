@@ -5,6 +5,7 @@ from flask_restful import Api
 from add_car.add_car import GetAddEditCars
 from add_car.create_user import CreateUser
 from add_car.notes import CreateEditDeleteNotes
+from add_car.statistics import ShowCars
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -20,6 +21,7 @@ def index():
 api.add_resource(GetAddEditCars, '/car')
 api.add_resource(CreateUser, '/user')
 api.add_resource(CreateEditDeleteNotes, '/notes')
+api.add_resource(ShowCars, '/statistics/<id_car>')
 
 
 if __name__ == '__main__':
