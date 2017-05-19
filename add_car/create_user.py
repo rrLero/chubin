@@ -37,7 +37,7 @@ def get_arguments_del():
 
 
 # запрос для Python консоли - просто скопировать в консоль
-# import requests
+# import requests #
 # x = requests.post('http://0.0.0.0:5000/', json = {'test': '1', 'test2': 2, 'test3': 3, 'test4': 4, 'test5': [1,2,3]})
 
 
