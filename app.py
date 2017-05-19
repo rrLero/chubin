@@ -10,6 +10,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 api = Api(app)
 
+
+@app.route('/')
+def index():
+    return 'Test app Postgresql on Heroku'
+
 # Добавить запись в базу в таблицу Cars
 api.add_resource(GetAddEditCars, '/car')
 api.add_resource(CreateUser, '/user')
