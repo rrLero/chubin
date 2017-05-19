@@ -11,8 +11,8 @@ app = Flask(__name__)
 api = Api(app)
 
 # Добавить запись в базу в таблицу Cars
-api.add_resource(GetAddEditCars, '/add/car')
-api.add_resource(CreateUser, '/add/user')
+api.add_resource(GetAddEditCars, '/car')
+api.add_resource(CreateUser, '/user')
 # api.add_resource(Get)
 
 
