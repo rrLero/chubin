@@ -60,6 +60,5 @@ class ShowCars(Resource):
         query_notes = session_git.query(Notes).filter(Notes.car == id_car)
         serialized_labels = [serialize(label) for label in
                              query_notes]
-        sl = query_cars.id
         session_git.close()
         return jsonify(serialized_labels)
