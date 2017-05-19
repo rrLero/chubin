@@ -22,6 +22,7 @@ session_git = DBSession()
 
 
 parser = reqparse.RequestParser()
+parser2 = reqparse.RequestParser()
 
 
 def get_arguments_post():
@@ -31,8 +32,8 @@ def get_arguments_post():
 
 
 def get_arguments_del():
-    parser.add_argument('id_user', type=int, required=True, location='json', help="id_user - не пришел")
-    return parser.parse_args()
+    parser2.add_argument('id_user', type=int, required=True, location='json', help="id_user - не пришел")
+    return parser2.parse_args()
 
 
 # запрос для Python консоли - просто скопировать в консоль
@@ -58,12 +59,12 @@ class CreateUser(Resource):
         return {'message': 'new user created'}, 201
 
     def delete(self):
-        args = get_arguments_del()
-        id_user = args.get('id_user')
+        args_del = get_arguments_del()
+        id_user = args_del.get('id_user')
         query = session_git.query(Users)
         for user in query:
             if user.id in id_user:
                 session_git.delete(user)
-                session_git.commit()
-                session_git.close()
+        session_git.commit()
+        session_git.close()
         return {'message': 'user deleted'}, 202

@@ -4,6 +4,7 @@ from flask import Flask
 from flask_restful import Api
 from add_car.add_car import GetAddEditCars
 from add_car.create_user import CreateUser
+from add_car.notes import CreateEditDeleteNotes
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,19 +14,15 @@ api = Api(app)
 
 @app.route('/')
 def index():
-    return 'Test app Postgresql on Heroku'
+    return 'APP FOR CARS STATISTIC'
 
 # Добавить запись в базу в таблицу Cars
 api.add_resource(GetAddEditCars, '/car')
 api.add_resource(CreateUser, '/user')
-# api.add_resource(Get)
+api.add_resource(CreateEditDeleteNotes, '/notes')
 
 
 if __name__ == '__main__':
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
-
-# if __name__ == '__main__':
-#     app.run(debug=True)

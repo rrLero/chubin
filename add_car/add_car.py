@@ -22,6 +22,7 @@ session_git = DBSession()
 
 
 parser = reqparse.RequestParser()
+parser2 = reqparse.RequestParser()
 
 
 def get_arguments_post():
@@ -34,8 +35,8 @@ def get_arguments_post():
 
 
 def get_arguments_del():
-    parser.add_argument('id_list', type=list, required=True, location='json', help="id_list - не пришел")
-    return parser.parse_args()
+    parser2.add_argument('id_list', type=list, required=True, location='json', help="id_list - не пришел")
+    return parser2.parse_args()
 
 
 # запрос для Python консоли - просто скопировать в консоль
@@ -64,12 +65,12 @@ class GetAddEditCars(Resource):
         return {'message': 'new car created'}, 201
 
     def delete(self):
-        args = get_arguments_del()
-        id_car = args.get('id_list')
+        args_del = get_arguments_del()
+        id_car = args_del.get('id_list')
         query = session_git.query(Cars)
         for car in query:
             if car.id in id_car:
                 session_git.delete(car)
-                session_git.commit()
-                session_git.close()
+        session_git.commit()
+        session_git.close()
         return {'message': 'car deleted by list'}, 202
