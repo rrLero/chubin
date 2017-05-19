@@ -3,7 +3,7 @@ from flask_restful import reqparse, Resource
 from flask import jsonify
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from my_models import Base, Cars
+from my_models import Base, Cars, Users
 import os
 
 
@@ -58,6 +58,9 @@ class GetAddEditCars(Resource):
         car_type = args.get('car_type')
         gov_number_trailer = args.get('gov_number_trailer')
         user = args.get('user_id')
+        users = session_git.query(Users).get(user)
+        if not users:
+            return {'message': 'no user with such id'}, 401
         new_car = Cars(gov_number=gov_number, car_type=car_type, gov_number_trailer=gov_number_trailer, user=user)
         session_git.add(new_car)
         session_git.commit()

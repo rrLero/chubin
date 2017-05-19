@@ -3,7 +3,7 @@ from flask_restful import reqparse, Resource
 from flask import jsonify
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from my_models import Base, Notes
+from my_models import Base, Notes, Cars
 import os
 from datetime import datetime
 
@@ -56,6 +56,9 @@ class CreateEditDeleteNotes(Resource):
     def post(self):
         args = get_arguments_post()
         car = args.get('car')
+        cars = session_git.query(Cars).get(car)
+        if not cars:
+            return {'message': 'no car with such id'}, 401
         date = args.get('date')
         dt = datetime.strptime(date, "%d/%m/%Y")
         date = dt
