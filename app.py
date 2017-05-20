@@ -18,10 +18,10 @@ def index():
     return 'APP FOR CARS STATISTIC'
 
 # Добавить запись в базу в таблицу Cars
-api.add_resource(GetAddEditCars, '/car')
+api.add_resource(GetAddEditCars, '/<int:user_id>/car', '/<int:user_id>/car/<int:car_id>')
 api.add_resource(CreateUser, '/user')
-api.add_resource(CreateEditDeleteNotes, '/notes')
-api.add_resource(ShowCars, '/statistics/<id_car>')
+api.add_resource(CreateEditDeleteNotes, '/<int:user_id>/notes', '/<int:user_id>/notes/<int:car_id>')
+api.add_resource(ShowCars, '/statistics/<id_car>', '/<int:user_id>/statistics')
 
 
 if __name__ == '__main__':
