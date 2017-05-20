@@ -41,6 +41,9 @@ def get_arguments_post():
 
 class CreateEditDeleteNotes(Resource):
     def get(self, user_id):
+        user_query = session_git.query(Users).get(user_id)
+        if not user_query:
+            return 'Page no found', 404
         query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id)
         users_list = [{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
                        'pays': notes.pays, 'id': notes.id} for notes in query]

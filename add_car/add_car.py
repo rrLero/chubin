@@ -40,6 +40,9 @@ def get_arguments_post():
 
 class GetAddEditCars(Resource):
     def get(self, user_id):
+        user_query = session_git.query(Users).get(user_id)
+        if not user_query:
+            return 'Page no found', 404
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
         car_list = [{'gov_number': car.gov_number, 'car_type': car.car_type,
                      'gov_number_trailer': car.gov_number_trailer, 'id': car.id, 'user_id': user_id} for car in query]
