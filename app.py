@@ -7,10 +7,12 @@ from add_car.create_user import CreateUser
 from add_car.notes import CreateEditDeleteNotes
 from add_car.statistics import ShowCars
 from add_car.login import GetToken
+from flask_cors import CORS, cross_origin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 
@@ -28,6 +30,17 @@ api.add_resource(CreateEditDeleteNotes, '/<int:user_id>/notes', '/<int:user_id>/
 api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 # Login
 api.add_resource(GetToken, '/get_token')
+
+
+@app.after_request
+def add_cors(resp):
+    """ Ensure all responses have the CORS headers. This ensures any failures are also accessible
+        by the client. """
+    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+    resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
+    resp.headers['Access-Control-Allow-Headers'] = request.headers.get(
+        'Access-Control-Request-Headers', 'Authorization')
 
 
 if __name__ == '__main__':
