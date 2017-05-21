@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask_restful import reqparse, Resource
-from flask import jsonify
 from my_models import Cars, Users, Notes, session_git
 from random import choice
 from string import ascii_letters
-import json
 
 
 parser = reqparse.RequestParser()
@@ -18,7 +16,7 @@ def get_arguments_get():
 
 
 class GetToken(Resource):
-    def get(self):
+    def post(self):
         args = get_arguments_get()
         user_name = args.get('user_name')
         password = args.get('password')
