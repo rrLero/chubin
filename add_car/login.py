@@ -10,8 +10,8 @@ parser2 = reqparse.RequestParser()
 
 
 def get_arguments_post():
-    parser.add_argument('user_name', type=str, location='json', required=True, help="нет имени пользователя")
-    parser.add_argument('password', type=str, location='json', required=True, help="нет пароля")
+    parser.add_argument('user_name', type=str, required=True, help="нет имени пользователя")
+    parser.add_argument('password', type=str, required=True, help="нет пароля")
     return parser.parse_args()
 
 
