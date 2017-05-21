@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 from flask_restful import reqparse, Resource
 from flask import jsonify
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from my_models import Base, Cars, Users, Notes
-import os
+from my_models import Cars, Users, Notes, session_git
+from flask import request, abort
+from functools import wraps
 
 
-if os.environ.get('DATABASE_URL') is None:
-    url = "postgresql:///chubin"
-else:
-    url = os.environ['DATABASE_URL']
-
-
-engine = create_engine(url)
-
-Base.metadata.create_all(engine)
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session_git = DBSession()
-
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        parser_auth = reqparse.RequestParser()
+        parser_auth.add_argument('token', type=str)
+        args = parser_auth.parse_args()
+        auth = args.get('token')
+        user_id = kwargs['user_id']
+        if not auth:  # no header set
+            abort(401)
+        user = session_git.query(Users).filter(Users.id == user_id, Users.user_token == auth).first()
+        if user is None:
+            abort(401)
+        return f(*args, **kwargs)
+    return decorated
 
 parser = reqparse.RequestParser()
 parser2 = reqparse.RequestParser()
@@ -39,6 +40,7 @@ def get_arguments_post():
 
 
 class GetAddEditCars(Resource):
+    @requires_auth
     def get(self, user_id):
         user_query = session_git.query(Users).get(user_id)
         if not user_query:

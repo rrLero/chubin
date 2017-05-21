@@ -1,24 +1,7 @@
 # -*- coding: utf-8 -*-
-from flask_restful import reqparse, Resource
+from flask_restful import reqparse, Resource, request
 from flask import jsonify
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from my_models import Base, Users
-import os
-
-
-if os.environ.get('DATABASE_URL') is None:
-    url = "postgresql:///chubin"
-else:
-    url = os.environ['DATABASE_URL']
-
-
-engine = create_engine(url)
-
-Base.metadata.create_all(engine)
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session_git = DBSession()
+from my_models import Users, session_git
 
 
 parser = reqparse.RequestParser()
@@ -44,7 +27,7 @@ def get_arguments_del():
 class CreateUser(Resource):
     def get(self):
         query = session_git.query(Users)
-        users_list = [{'user_name': user.user_name, 'password': user.user_password, 'id': user.id} for user in query]
+        users_list = [{'user_name': user.user_name, 'password': user.user_password, 'id': user.id, 'token': user.user_token} for user in query]
         session_git.close()
         return jsonify(users_list)
 
@@ -52,10 +35,13 @@ class CreateUser(Resource):
         args = get_arguments_post()
         user_name = args.get('user_name')
         password = args.get('password')
-        new_user = Users(user_name=user_name, user_password=password)
-        session_git.add(new_user)
-        session_git.commit()
-        session_git.close()
+        new_user = Users(user_name=user_name.lower(), user_password=password)
+        try:
+            session_git.add(new_user)
+            session_git.commit()
+            session_git.close()
+        except:
+            return {'message': 'user with such login already in base try another name'}, 400
         return {'message': 'new user created'}, 201
 
     def delete(self):

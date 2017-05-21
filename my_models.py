@@ -2,8 +2,22 @@
 from sqlalchemy import Column, DateTime, String, Integer, func, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy import create_engine
+import os
+from sqlalchemy.orm import sessionmaker
+
+
+if os.environ.get('DATABASE_URL') is None:
+    url = "postgresql:///chubin"
+else:
+    url = os.environ['DATABASE_URL']
 
 Base = declarative_base()
+engine = create_engine(url)
+Base.metadata.create_all(engine)
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session_git = DBSession()
 
 
 class Cars(Base):
@@ -30,6 +44,7 @@ class Notes(Base):
 class Users(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    user_name = Column(String, nullable=False)
+    user_name = Column(String, nullable=False, unique=True)
     user_password = Column(String, nullable=False)
+    user_token = Column(String)
     lnk_users_cars = relationship('Cars')

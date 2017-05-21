@@ -6,6 +6,7 @@ from add_car.add_car import GetAddEditCars
 from add_car.create_user import CreateUser
 from add_car.notes import CreateEditDeleteNotes
 from add_car.statistics import ShowCars
+from add_car.login import GetToken
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,12 +18,16 @@ api = Api(app)
 def index():
     return 'APP FOR CARS STATISTIC'
 
-# Добавить запись в базу в таблицу Cars
+# работа с таблицу Cars
 api.add_resource(GetAddEditCars, '/<int:user_id>/car', '/<int:user_id>/car/<int:car_id>')
+# работа с таблицу Users
 api.add_resource(CreateUser, '/user')
+# работа с таблицу Notes
 api.add_resource(CreateEditDeleteNotes, '/<int:user_id>/notes', '/<int:user_id>/notes/<int:car_id>')
-api.add_resource(ShowCars, '/statistics/<id_car>', '/<int:user_id>/statistics')
-
+# получение статистики по базе данных
+api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
+# Login
+api.add_resource(GetToken, '/get_token')
 
 if __name__ == '__main__':
     app.debug = True
