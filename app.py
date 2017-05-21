@@ -29,6 +29,7 @@ api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 # Login
 api.add_resource(GetToken, '/get_token')
 
+
 if __name__ == '__main__':
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
