@@ -32,17 +32,6 @@ api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 api.add_resource(GetToken, '/get_token')
 
 
-@app.after_request
-def add_cors(resp):
-    """ Ensure all responses have the CORS headers. This ensures any failures are also accessible
-        by the client. """
-    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-    resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
-    resp.headers['Access-Control-Allow-Headers'] = request.headers.get(
-        'Access-Control-Request-Headers', 'Authorization')
-
-
 if __name__ == '__main__':
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
