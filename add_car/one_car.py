@@ -54,35 +54,45 @@ def modify_string(s, list_chars):
     return s
 
 
-def try_for_unique(s):
-    return session_git.query(Cars).filter(Cars.gov_number == s).first()
-
-
-class GetAddEditCars(Resource):
+class GetOneCar(Resource):
     @requires_auth
-    def get(self):
+    def get(self, car_id):
+        user_id = get_user_id()
+        car = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id, Cars.id == car_id).first()
+        one_car = {'gov_number': car.gov_number, 'car_type': car.car_type,
+                   'gov_number_trailer': car.gov_number_trailer, 'id': car.id, 'user_id': user_id}
+        session_git.close()
+        return jsonify(one_car)
+
+    @requires_auth
+    def delete(self, car_id):
         user_id = get_user_id()
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
-        car_list = [{'gov_number': car.gov_number, 'car_type': car.car_type,
-                     'gov_number_trailer': car.gov_number_trailer, 'id': car.id, 'user_id': user_id} for car in query]
+        for car in query:
+            if car.id == car_id:
+                query_notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.id == car_id)
+                for note in query_notes:
+                    session_git.delete(note)
+                session_git.delete(car)
+                session_git.commit()
+                session_git.close()
+                return {'message': 'car deleted by list'}, 202
         session_git.close()
-        return jsonify(car_list)
+        return {'message': 'error'}, 401
 
     @requires_auth
-    def post(self):
+    def put(self, car_id):
+        user_id = get_user_id()
+        car = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id, Cars.id == car_id).first()
         args = get_arguments_post()
         gov_number = modify_string(args.get('gov_number'), ['-', ' '])
-        if try_for_unique(gov_number):
-            return {'message': 'such gov_number already exist'}, 403
         car_type = modify_string(args.get('car_type'), ['-', ' '])
         gov_number_trailer = args.get('gov_number_trailer')
-        token = args.get('token')
-        users = session_git.query(Users).filter(Users.user_token == token).first()
-        user = users.id
-        if not users:
-            return {'message': 'no user with such id'}, 401
-        new_car = Cars(gov_number=gov_number, car_type=car_type, gov_number_trailer=gov_number_trailer, user=user)
-        session_git.add(new_car)
-        session_git.commit()
-        session_git.close()
-        return {'message': 'new car created'}, 201
+        if car:
+            car.gov_number = gov_number
+            car.car_type = car_type
+            car.gov_number_trailer = gov_number_trailer
+            session_git.commit()
+            session_git.close()
+            return {'message': 'notes about car changed'}, 202
+        return {'message': 'something wrong'}, 403

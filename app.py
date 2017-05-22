@@ -7,6 +7,7 @@ from add_car.create_user import CreateUser
 from add_car.notes import CreateEditDeleteNotes
 from add_car.statistics import ShowCars
 from add_car.login import GetToken
+from add_car.one_car import GetOneCar
 from flask_cors import CORS, cross_origin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,7 +22,8 @@ def index():
     return 'APP FOR CARS STATISTIC'
 
 # работа с таблицу Cars
-api.add_resource(GetAddEditCars, '/car', '/car/<int:car_id>')
+api.add_resource(GetAddEditCars, '/car')
+api.add_resource(GetOneCar, '/car/<int:car_id>')
 # работа с таблицу Users
 api.add_resource(CreateUser, '/user')
 # работа с таблицу Notes
