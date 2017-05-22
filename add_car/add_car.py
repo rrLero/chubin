@@ -46,6 +46,12 @@ def get_user_id():
     return user_query.id
 
 
+def modify_gov_number(s):
+    s = ''.join(x.upper() for x in s.split())
+    s = ''.join(x.upper() for x in s.split('-'))
+    return s
+
+
 class GetAddEditCars(Resource):
     @requires_auth
     def get(self):
@@ -58,7 +64,7 @@ class GetAddEditCars(Resource):
 
     def post(self):
         args = get_arguments_post()
-        gov_number = args.get('gov_number')
+        gov_number = modify_gov_number(args.get('gov_number'))
         car_type = args.get('car_type')
         gov_number_trailer = args.get('gov_number_trailer')
         token = args.get('token')
