@@ -55,8 +55,7 @@ def modify_string(s, list_chars):
 
 
 def try_for_unique(s):
-    x = session_git.query(Cars).filter(Cars.gov_number == s).first()
-    return x
+    return session_git.query(Cars).filter(Cars.gov_number == s).first()
 
 
 class GetAddEditCars(Resource):
@@ -69,6 +68,7 @@ class GetAddEditCars(Resource):
         session_git.close()
         return jsonify(car_list)
 
+    @requires_auth
     def post(self):
         args = get_arguments_post()
         gov_number = modify_string(args.get('gov_number'), ['-', ' '])
@@ -87,6 +87,7 @@ class GetAddEditCars(Resource):
         session_git.close()
         return {'message': 'new car created'}, 201
 
+    @requires_auth
     def delete(self, car_id):
         user_id = get_user_id()
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
@@ -101,3 +102,20 @@ class GetAddEditCars(Resource):
                 return {'message': 'car deleted by list'}, 202
         session_git.close()
         return {'message': 'error'}, 401
+
+    @requires_auth
+    def put(self, car_id):
+        user_id = get_user_id()
+        car = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id, Cars.id == car_id).first()
+        args = get_arguments_post()
+        gov_number = modify_string(args.get('gov_number'), ['-', ' '])
+        car_type = modify_string(args.get('car_type'), ['-', ' '])
+        gov_number_trailer = args.get('gov_number_trailer')
+        if car:
+            car.gov_number = gov_number
+            car.car_type = car_type
+            car.gov_number_trailer = gov_number_trailer
+            session_git.commit()
+            session_git.close()
+            return {'message': 'notes about car changed'}, 202
+        return {'message': 'something wrong'}, 403

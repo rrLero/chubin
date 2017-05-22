@@ -58,6 +58,7 @@ class CreateEditDeleteNotes(Resource):
         session_git.close()
         return jsonify(users_list)
 
+    @requires_auth
     def post(self, car_id):
         args = get_arguments_post()
         cars = session_git.query(Cars).get(car_id)
@@ -79,6 +80,7 @@ class CreateEditDeleteNotes(Resource):
         session_git.close()
         return {'message': 'new note created'}, 201
 
+    @requires_auth
     def delete(self, car_id):
         user_id = get_user_id()
         id_note = car_id
