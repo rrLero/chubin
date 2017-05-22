@@ -15,6 +15,23 @@ def get_arguments_post():
     return parser.parse_args()
 
 
+def get_whats_wrong(user_name, password):
+    user_query = session_git.query(Users)
+    name = False
+    user_password = False
+    for user in user_query:
+        if user.user_name == user_name:
+            name = True
+        if user.user_password == password:
+            user_password = True
+    if name and not user_password:
+        return {'message': 'wrong password'}, 401
+    elif not name and not user_password:
+        return {'message': 'wrong login and password'}, 401
+    elif not name and user_password:
+        return {'message': 'wrong login'}, 401
+
+
 class GetToken(Resource):
     def post(self):
         args = get_arguments_post()
@@ -23,7 +40,7 @@ class GetToken(Resource):
         user_query = session_git.query(Users).filter(Users.user_name == user_name.lower(), Users.user_password == password).first()
         if not user_query:
             session_git.close()
-            return {'message': 'unauthorized'}, 401
+            return get_whats_wrong(user_name, password)
         token = ''.join(choice(ascii_letters) for i in range(17))
         user_query.user_token = token
         session_git.commit()
