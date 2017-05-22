@@ -50,8 +50,13 @@ def modify_string(s, list_chars):
     while list_chars:
         s = ''.join(x.upper() for x in s.split(list_chars[-1]))
         list_chars.pop()
-        modify_string(s, list_chars)
+        s = modify_string(s, list_chars)
     return s
+
+
+def try_for_unique(s):
+    x = session_git.query(Cars).filter(Cars.gov_number == s).first()
+    return x
 
 
 class GetAddEditCars(Resource):
@@ -67,6 +72,8 @@ class GetAddEditCars(Resource):
     def post(self):
         args = get_arguments_post()
         gov_number = modify_string(args.get('gov_number'), ['-', ' '])
+        if try_for_unique(gov_number):
+            return {'message': 'such gov_number already exist'}, 403
         car_type = modify_string(args.get('car_type'), ['-', ' '])
         gov_number_trailer = args.get('gov_number_trailer')
         token = args.get('token')
