@@ -38,20 +38,18 @@ def get_arguments_post():
     return parser.parse_args()
 
 
-# запрос для Python консоли - просто скопировать в консоль
-# import requests
-# x = requests.post('http://0.0.0.0:5000/', json = {'test': '1', 'test2': 2, 'test3': 3, 'test4': 4, 'test5': [1,2,3]})
+def get_user_id():
+    args = get_arguments_get()
+    token = args.get('token')
+    user_query = session_git.query(Users).filter(Users.user_token == token).first()
+    session_git.close()
+    return user_query.id
 
 
 class GetAddEditCars(Resource):
     @requires_auth
     def get(self):
-        args = get_arguments_get()
-        token = args.get('token')
-        user_query = session_git.query(Users).filter(Users.user_token == token).first()
-        user_id = user_query.id
-        if not user_query:
-            return 'Page no found', 404
+        user_id = get_user_id()
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
         car_list = [{'gov_number': car.gov_number, 'car_type': car.car_type,
                      'gov_number_trailer': car.gov_number_trailer, 'id': car.id, 'user_id': user_id} for car in query]
@@ -75,15 +73,11 @@ class GetAddEditCars(Resource):
         return {'message': 'new car created'}, 201
 
     def delete(self, car_id):
-        args = get_arguments_get()
-        token = args.get('token')
-        users = session_git.query(Users).filter(Users.user_token == token).first()
-        user_id = users.id
-        id_car = car_id
+        user_id = get_user_id()
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
         for car in query:
-            if car.id == id_car:
-                query_notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.id == id_car)
+            if car.id == car_id:
+                query_notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.id == car_id)
                 for note in query_notes:
                     session_git.delete(note)
                 session_git.delete(car)

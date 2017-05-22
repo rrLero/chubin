@@ -19,11 +19,6 @@ def get_arguments_del():
     return parser2.parse_args()
 
 
-# запрос для Python консоли - просто скопировать в консоль
-# import requests #
-# x = requests.post('http://0.0.0.0:5000/', json = {'test': '1', 'test2': 2, 'test3': 3, 'test4': 4, 'test5': [1,2,3]})
-
-
 class CreateUser(Resource):
     def get(self):
         query = session_git.query(Users)
@@ -44,13 +39,13 @@ class CreateUser(Resource):
             return {'message': 'user with such login already in base try another name'}, 400
         return {'message': 'new user created'}, 201
 
-    def delete(self):
-        args_del = get_arguments_del()
-        id_user = args_del.get('id_user')
-        query = session_git.query(Users)
-        for user in query:
-            if user.id in id_user:
-                session_git.delete(user)
-        session_git.commit()
-        session_git.close()
-        return {'message': 'user deleted'}, 202
+    # def delete(self):
+    #     args_del = get_arguments_del()
+    #     id_user = args_del.get('id_user')
+    #     query = session_git.query(Users)
+    #     for user in query:
+    #         if user.id == id_user:
+    #             session_git.delete(user)
+    #     session_git.commit()
+    #     session_git.close()
+    #     return {'message': 'user deleted'}, 201

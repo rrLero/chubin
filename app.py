@@ -25,7 +25,7 @@ api.add_resource(GetAddEditCars, '/car', '/car/<int:car_id>')
 # работа с таблицу Users
 api.add_resource(CreateUser, '/user')
 # работа с таблицу Notes
-api.add_resource(CreateEditDeleteNotes, '/<int:user_id>/notes', '/<int:user_id>/notes/<int:car_id>')
+api.add_resource(CreateEditDeleteNotes, '/notes', '/notes/<int:car_id>')
 # получение статистики по базе данных
 api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 # Login
