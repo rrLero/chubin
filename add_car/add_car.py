@@ -13,24 +13,28 @@ def requires_auth(f):
         parser_auth.add_argument('token', type=str)
         args = parser_auth.parse_args()
         auth = args.get('token')
-        user_id = kwargs['user_id']
         if not auth:  # no header set
             abort(401)
-        user = session_git.query(Users).filter(Users.id == user_id, Users.user_token == auth).first()
+        user = session_git.query(Users).filter(Users.user_token == auth).first()
         if user is None:
             abort(401)
         return f(*args, **kwargs)
     return decorated
 
 parser = reqparse.RequestParser()
-parser2 = reqparse.RequestParser()
+parser_2 = reqparse.RequestParser()
+
+
+def get_arguments_get():
+    parser_2.add_argument('token', help="token")
+    return parser_2.parse_args()
 
 
 def get_arguments_post():
     parser.add_argument('gov_number', type=str, location='json', required=True, help="Что то не так заполнено в гос номере")
     parser.add_argument('car_type', type=str, location='json', required=True, help="Что то не так заполнено в тип машины")
     parser.add_argument('gov_number_trailer', type=str, location='json', help="Что то не так заполнено в прицеп")
-    parser.add_argument('user_id', type=int, location='json', help="User")
+    parser.add_argument('token', help="token")
     return parser.parse_args()
 
 
@@ -41,8 +45,11 @@ def get_arguments_post():
 
 class GetAddEditCars(Resource):
     @requires_auth
-    def get(self, user_id):
-        user_query = session_git.query(Users).get(user_id)
+    def get(self):
+        args = get_arguments_get()
+        token = args.get('token')
+        user_query = session_git.query(Users).filter(Users.user_token == token).first()
+        user_id = user_query.id
         if not user_query:
             return 'Page no found', 404
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
@@ -51,13 +58,14 @@ class GetAddEditCars(Resource):
         session_git.close()
         return jsonify(car_list)
 
-    def post(self, user_id):
+    def post(self):
         args = get_arguments_post()
         gov_number = args.get('gov_number')
         car_type = args.get('car_type')
         gov_number_trailer = args.get('gov_number_trailer')
-        user = user_id
-        users = session_git.query(Users).get(user)
+        token = args.get('token')
+        users = session_git.query(Users).filter(Users.user_token == token).first()
+        user = users.id
         if not users:
             return {'message': 'no user with such id'}, 401
         new_car = Cars(gov_number=gov_number, car_type=car_type, gov_number_trailer=gov_number_trailer, user=user)
@@ -66,7 +74,11 @@ class GetAddEditCars(Resource):
         session_git.close()
         return {'message': 'new car created'}, 201
 
-    def delete(self, user_id, car_id):
+    def delete(self, car_id):
+        args = get_arguments_get()
+        token = args.get('token')
+        users = session_git.query(Users).filter(Users.user_token == token).first()
+        user_id = users.id
         id_car = car_id
         query = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Cars.user == user_id)
         for car in query:

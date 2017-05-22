@@ -21,7 +21,7 @@ def index():
     return 'APP FOR CARS STATISTIC'
 
 # работа с таблицу Cars
-api.add_resource(GetAddEditCars, '/<int:user_id>/car', '/<int:user_id>/car/<int:car_id>')
+api.add_resource(GetAddEditCars, '/car', '/car/<int:car_id>')
 # работа с таблицу Users
 api.add_resource(CreateUser, '/user')
 # работа с таблицу Notes
