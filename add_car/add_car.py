@@ -46,9 +46,11 @@ def get_user_id():
     return user_query.id
 
 
-def modify_gov_number(s):
-    s = ''.join(x.upper() for x in s.split())
-    s = ''.join(x.upper() for x in s.split('-'))
+def modify_string(s, list_chars):
+    while list_chars:
+        s = ''.join(x.upper() for x in s.split(list_chars[-1]))
+        list_chars.pop()
+        modify_string(s, list_chars)
     return s
 
 
@@ -64,8 +66,8 @@ class GetAddEditCars(Resource):
 
     def post(self):
         args = get_arguments_post()
-        gov_number = modify_gov_number(args.get('gov_number'))
-        car_type = args.get('car_type')
+        gov_number = modify_string(args.get('gov_number'), ['-', ' '])
+        car_type = modify_string(args.get('car_type'), ['-', ' '])
         gov_number_trailer = args.get('gov_number_trailer')
         token = args.get('token')
         users = session_git.query(Users).filter(Users.user_token == token).first()
