@@ -41,8 +41,11 @@ class GetToken(Resource):
         if not user_query:
             session_git.close()
             return get_whats_wrong(user_name, password)
-        token = ''.join(choice(ascii_letters) for i in range(17))
-        user_query.user_token = token
-        session_git.commit()
-        session_git.close()
+        if not user_query.user_token:
+            token = ''.join(choice(ascii_letters) for i in range(17))
+            user_query.user_token = token
+            session_git.commit()
+            session_git.close()
+        else:
+            token = user_query.user_token
         return {'token': token}, 200
