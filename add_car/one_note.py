@@ -149,3 +149,17 @@ class EditDeleteOneNote(Resource):
         session_git.commit()
         session_git.close()
         return {'message': 'note changed'}, 201
+
+
+class GetOneNote(Resource):
+    @requires_auth
+    def get(self, note_id):
+        user_id = get_user_id()
+        notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id, Notes.id == note_id).first()
+        if not notes:
+            return {'message': 'no note with such id'}, 403
+        cars_query = session_git.query(Cars).filter(Cars.user == user_id)
+        users_list = {'date': notes.date, 'km': notes.km, 'works': notes.works, 'pays': notes.pays, 'id': notes.id,
+                      'car': [serialize(car) for car in cars_query if car.id == notes.car][0]}
+        session_git.close()
+        return jsonify(users_list)

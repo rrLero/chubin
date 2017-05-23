@@ -5,11 +5,9 @@ from flask_restful import Api
 from add_car.add_car import GetAddEditCars
 from add_car.create_user import CreateUser
 from add_car.notes import CreateEditDeleteNotes
-from add_car.statistics import ShowCars
 from add_car.login import GetToken
 from add_car.one_car import GetOneCar
-from add_car.one_note import EditDeleteOneNote
-from add_car.get_one_note import GetOneNote
+from add_car.one_note import EditDeleteOneNote, GetOneNote
 from flask_cors import CORS, cross_origin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -32,8 +30,6 @@ api.add_resource(CreateUser, '/user')
 api.add_resource(CreateEditDeleteNotes, '/notes')
 api.add_resource(EditDeleteOneNote, '/notes/<int:car_id>')
 api.add_resource(GetOneNote, '/notes/<int:note_id>/get')
-# получение статистики по базе данных
-api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 # Login
 api.add_resource(GetToken, '/get_token')
 
