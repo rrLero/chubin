@@ -61,7 +61,10 @@ def get_stats(users_list):
         for user in users_list:
             km_list.append(user['km'])
             pay_list.append(user['pays'])
-        payments = sum(pay_list)
+        payments = 0
+        for pays in pay_list:
+            if pays:
+                payments += pays
         km_result = max(km_list) - min(km_list)
         return payments, km_result
 
