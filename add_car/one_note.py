@@ -131,3 +131,21 @@ class EditDeleteOneNote(Resource):
             return {'message': 'note deleted'}, 202
         session_git.close()
         return {'message': 'this user has no rights to delete this post'}, 401
+
+    @requires_auth
+    def put(self, car_id):
+        args = get_arguments_post()
+        token = args.get('token')
+        users = session_git.query(Users).filter(Users.user_token == token).first()
+        note = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == users.id, Notes.id == car_id).first()
+        if not note:
+            return {'message': 'no note with such id'}, 403
+        date = args.get('date')
+        date = datetime.datetime.utcfromtimestamp(date)
+        km = args.get('km')
+        works = args.get('works')
+        pays = args.get('pays')
+        note.date, note.km, note.works, note.pays = date, km, works, pays
+        session_git.commit()
+        session_git.close()
+        return {'message': 'note changed'}, 201

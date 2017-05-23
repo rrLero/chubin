@@ -43,6 +43,20 @@ def get_user_id():
     return user_query.id
 
 
+def get_stats(users_list):
+    if not users_list:
+        return None, None
+    else:
+        km_list = []
+        pay_list = []
+        for user in users_list:
+            km_list.append(user['km'])
+            pay_list.append(user['pays'])
+        payments = sum(pay_list)
+        km_result = max(km_list) - min(km_list)
+        return payments, km_result
+
+
 def serialize(model):
     """Transforms a model into a dictionary which can be dumped to JSON."""
     # first we get the names of all the columns on your model
@@ -68,5 +82,6 @@ class CreateEditDeleteNotes(Resource):
         query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id, Notes.date > date_from, Notes.date < date_to).order_by(Notes.date.desc())
         users_list = [{'date': notes.date, 'km': notes.km, 'works': notes.works,
                        'pays': notes.pays, 'id': notes.id, 'car': [serialize(car) for car in cars_query if car.id == notes.car][0]} for notes in query]
+        payments, km_result = get_stats(users_list)
         session_git.close()
-        return jsonify(users_list)
+        return jsonify({'notes': users_list, 'payments': payments, 'run': None})
