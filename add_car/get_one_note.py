@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask_restful import reqparse, Resource
 from my_models import Notes, Cars, Users, session_git
-from datetime import datetime
-import time
 from flask import request, abort, jsonify
 from functools import wraps
-import datetime
 from sqlalchemy.orm import class_mapper
 
 
@@ -24,24 +21,12 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
-parser = reqparse.RequestParser()
 parser_2 = reqparse.RequestParser()
 
 
 def get_arguments_get():
     parser_2.add_argument('token', help="token")
-    parser_2.add_argument('date_from', type=float, help='Timestamp')
-    parser_2.add_argument('date_to', type=float, help='Timestamp')
     return parser_2.parse_args()
-
-
-def get_arguments_post():
-    parser.add_argument('date', type=float, location='json', required=True, help="Что то не так заполнено в date")
-    parser.add_argument('km', type=int, location='json', required=True, help="Что то не так заполнено в km")
-    parser.add_argument('works', type=str, location='json', required=True, help="Что то не так заполнено в works")
-    parser.add_argument('pays', type=int, location='json', required=True, help="Что то не так заполнено в pays")
-    parser.add_argument('token', help="token")
-    return parser.parse_args()
 
 
 def get_user_id():
@@ -50,20 +35,6 @@ def get_user_id():
     user_query = session_git.query(Users).filter(Users.user_token == token).first()
     session_git.close()
     return user_query.id
-
-
-def get_stats(users_list):
-    if not users_list:
-        return None, None
-    else:
-        km_list = []
-        pay_list = []
-        for user in users_list:
-            km_list.append(user['km'])
-            pay_list.append(user['pays'])
-        payments = sum(pay_list)
-        km_result = max(km_list) - min(km_list)
-        return payments, km_result
 
 
 def serialize(model):
