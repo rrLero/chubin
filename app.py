@@ -8,6 +8,7 @@ from add_car.notes import CreateEditDeleteNotes
 from add_car.statistics import ShowCars
 from add_car.login import GetToken
 from add_car.one_car import GetOneCar
+from add_car.one_note import EditDeleteOneNote
 from flask_cors import CORS, cross_origin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -27,7 +28,8 @@ api.add_resource(GetOneCar, '/car/<int:car_id>')
 # работа с таблицу Users
 api.add_resource(CreateUser, '/user')
 # работа с таблицу Notes
-api.add_resource(CreateEditDeleteNotes, '/notes', '/notes/<int:car_id>')
+api.add_resource(CreateEditDeleteNotes, '/notes')
+api.add_resource(EditDeleteOneNote, '/notes/<int:car_id>')
 # получение статистики по базе данных
 api.add_resource(ShowCars, '/<int:user_id>/statistics/<id_car>')
 # Login
