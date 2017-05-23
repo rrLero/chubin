@@ -57,7 +57,7 @@ class CreateEditDeleteNotes(Resource):
         date_to = datetime.datetime.utcfromtimestamp(date_to)
         cars_query = session_git.query(Cars).filter(Cars.user == user_id)
         query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id, Notes.date > date_from, Notes.date < date_to).order_by(Notes.date)
-        users_list = [{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
-                       'pays': notes.pays, 'id': notes.id, 'car_name': [car.car_type for car in cars_query if car.id == notes.car]} for notes in query]
+        users_list = reversed([{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
+                                'pays': notes.pays, 'id': notes.id, 'car_name': [car.car_type for car in cars_query if car.id == notes.car]} for notes in query])
         session_git.close()
         return jsonify(users_list)
