@@ -6,6 +6,7 @@ import time
 from flask import request, abort, jsonify
 from functools import wraps
 import datetime
+from sqlalchemy.orm import class_mapper
 
 
 def requires_auth(f):
@@ -65,6 +66,14 @@ def get_stats(users_list):
         return payments, km_result
 
 
+def serialize(model):
+    """Transforms a model into a dictionary which can be dumped to JSON."""
+    # first we get the names of all the columns on your model
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    # then we return their values in a dict
+    return dict((c, getattr(model, c)) for c in columns)
+
+
 class EditDeleteOneNote(Resource):
     @requires_auth
     def get(self, car_id):
@@ -82,8 +91,9 @@ class EditDeleteOneNote(Resource):
                                                                                  Notes.date > date_from,
                                                                                  Notes.date < date_to,
                                                                                  Cars.id == car_id).order_by(Notes.date.desc())
-        users_list = [{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
-                       'pays': notes.pays, 'id': notes.id} for notes in query]
+        cars_query = session_git.query(Cars).filter(Cars.user == user_id)
+        users_list = [{'date': notes.date, 'km': notes.km, 'works': notes.works,
+                       'pays': notes.pays, 'id': notes.id, 'car': [serialize(car) for car in cars_query if car.id == notes.car][0]} for notes in query]
         payments, km_result = get_stats(users_list)
         session_git.close()
         return jsonify({'notes': users_list, 'payments': payments, 'run': km_result})
