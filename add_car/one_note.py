@@ -81,9 +81,9 @@ class EditDeleteOneNote(Resource):
         query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id,
                                                                                  Notes.date > date_from,
                                                                                  Notes.date < date_to,
-                                                                                 Cars.id == car_id).order_by(Notes.date)
-        users_list = reversed([{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
-                       'pays': notes.pays, 'id': notes.id} for notes in query])
+                                                                                 Cars.id == car_id).order_by(Notes.date.desc())
+        users_list = [{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
+                       'pays': notes.pays, 'id': notes.id} for notes in query]
         payments, km_result = get_stats(users_list)
         session_git.close()
         return jsonify({'notes': users_list, 'payments': payments, 'run': km_result})
