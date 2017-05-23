@@ -2,9 +2,10 @@
 from flask_restful import reqparse, Resource
 from my_models import Notes, Cars, Users, session_git
 from datetime import datetime
-import datetime
-from flask import request, abort
+import time
+from flask import request, abort, jsonify
 from functools import wraps
+import datetime
 
 
 def requires_auth(f):
@@ -28,6 +29,8 @@ parser_2 = reqparse.RequestParser()
 
 def get_arguments_get():
     parser_2.add_argument('token', help="token")
+    parser_2.add_argument('date_from', type=float, help='Timestamp')
+    parser_2.add_argument('date_to', type=float, help='Timestamp')
     return parser_2.parse_args()
 
 
@@ -49,6 +52,27 @@ def get_user_id():
 
 
 class EditDeleteOneNote(Resource):
+    @requires_auth
+    def get(self, car_id):
+        user_id = get_user_id()
+        args = get_arguments_get()
+        date_from = args.get('date_from')
+        date_to = args.get('date_to')
+        if not date_to:
+            date_to = int(time.time())
+        if not date_from:
+            date_from = int(time.time()) - 2600000
+        date_from = datetime.datetime.utcfromtimestamp(date_from)
+        date_to = datetime.datetime.utcfromtimestamp(date_to)
+        query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id,
+                                                                                 Notes.date > date_from,
+                                                                                 Notes.date < date_to,
+                                                                                 Cars.id == car_id)
+        users_list = [{'car': notes.car, 'date': notes.date, 'km': notes.km, 'works': notes.works,
+                       'pays': notes.pays, 'id': notes.id} for notes in query]
+        session_git.close()
+        return jsonify(users_list)
+
     @requires_auth
     def post(self, car_id):
         args = get_arguments_post()
