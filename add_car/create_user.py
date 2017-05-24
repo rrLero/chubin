@@ -16,6 +16,7 @@ def get_arguments_post():
 
 def get_arguments_del():
     parser2.add_argument('id_user', type=int, required=True, location='json', help="id_user - не пришел")
+    parser2.add_argument('password_for_del', type=int, required=True, location='json', help="id_user - не пришел")
     return parser2.parse_args()
 
 
@@ -42,6 +43,7 @@ class CreateUser(Resource):
     def delete(self):
         args_del = get_arguments_del()
         id_user = args_del.get('id_user')
+        password_for_del
         query = session_git.query(Users)
         for user in query:
             if user.id == id_user:
@@ -54,4 +56,4 @@ class CreateUser(Resource):
                 session_git.delete(user)
         session_git.commit()
         session_git.close()
-        return {'message': 'user deleted'}, 201
+        return {'message': 'user deleted '}, 201
