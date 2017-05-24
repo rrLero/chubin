@@ -31,8 +31,8 @@ class CreateUser(Resource):
         args = get_arguments_post()
         user_name = args.get('user_name')
         password = args.get('password')
-        new_user = Users(user_name=user_name.lower(), user_password=password)
         try:
+            new_user = Users(user_name=user_name.lower(), user_password=password)
             session_git.add(new_user)
             session_git.commit()
             session_git.close()
@@ -56,4 +56,4 @@ class CreateUser(Resource):
                 session_git.delete(user)
         session_git.commit()
         session_git.close()
-        return {'message': 'user deleted '}, 201
+        return {'message': 'user deleted'}, 201
