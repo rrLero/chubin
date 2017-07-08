@@ -76,9 +76,9 @@ class CreateEditDeleteNotes(Resource):
         date_from = args.get('date_from')
         date_to = args.get('date_to')
         if not date_to:
-            date_to = int(time.time())
+            date_to = int(time.time())+86400
         if not date_from:
-            date_from = int(time.time()) - 26000000
+            date_from = int(time.time()) - 26086400
         date_from = datetime.datetime.utcfromtimestamp(date_from)
         date_to = datetime.datetime.utcfromtimestamp(date_to)
         cars_query = session_git.query(Cars).filter(Cars.user == user_id)
