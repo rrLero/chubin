@@ -91,8 +91,8 @@ class EditDeleteOneNote(Resource):
         date_from = datetime.datetime.utcfromtimestamp(date_from)
         date_to = datetime.datetime.utcfromtimestamp(date_to)
         query = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.user == user_id,
-                                                                                 Notes.date > date_from,
-                                                                                 Notes.date < date_to,
+                                                                                 Notes.date >= date_from,
+                                                                                 Notes.date <= date_to,
                                                                                  Cars.id == car_id).order_by(Notes.date.desc())
         cars_query = session_git.query(Cars).filter(Cars.user == user_id)
         users_list = [{'date': notes.date, 'km': notes.km, 'works': notes.works,
