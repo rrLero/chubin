@@ -43,20 +43,20 @@ class CreateUser(Resource):
         session_git.close()
         return {'message': 'new user created'}, 201
 
-    def delete(self):
-        args_del = get_arguments_del()
-        id_user = args_del.get('id_user')
-        password_for_del
-        query = session_git.query(Users)
-        for user in query:
-            if user.id == id_user:
-                cars = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Users.id == id_user)
-                for car in cars:
-                    notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.id == car.id)
-                    for note in notes:
-                        session_git.delete(note)
-                    session_git.delete(car)
-                session_git.delete(user)
-        session_git.commit()
-        session_git.close()
-        return {'message': 'user deleted'}, 201
+    # def delete(self):
+    #     args_del = get_arguments_del()
+    #     id_user = args_del.get('id_user')
+    #     password_for_del
+    #     query = session_git.query(Users)
+    #     for user in query:
+    #         if user.id == id_user:
+    #             cars = session_git.query(Cars).join(Cars, Users.lnk_users_cars).filter(Users.id == id_user)
+    #             for car in cars:
+    #                 notes = session_git.query(Notes).join(Notes, Cars.lnk_cars_notes).filter(Cars.id == car.id)
+    #                 for note in notes:
+    #                     session_git.delete(note)
+    #                 session_git.delete(car)
+    #             session_git.delete(user)
+    #     session_git.commit()
+    #     session_git.close()
+    #     return {'message': 'user deleted'}, 201
