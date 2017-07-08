@@ -85,7 +85,7 @@ class EditDeleteOneNote(Resource):
         date_from = args.get('date_from')
         date_to = args.get('date_to')
         if not date_to:
-            date_to = int(time.time())
+            date_to = int(time.time())+86400
         if not date_from:
             date_from = int(time.time()) - 2600000
         date_from = datetime.datetime.utcfromtimestamp(date_from)
